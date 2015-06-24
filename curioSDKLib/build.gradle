@@ -1,0 +1,43 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "23.0.0 rc2"
+
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 22
+        versionCode 1
+        versionName "v1.07"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.google.android.gms:play-services:+'
+}
+
+artifacts {
+
+}
+
+task clearJar(type: Delete) {
+    delete "jarLib/curiosdk.jar"
+}
+
+task makeJar(type: Copy) {
+    from("build/intermediates/bundles/release/")
+    into("jarLib/")
+    include("classes.jar")
+    rename ("classes.jar", "curiosdk.jar")
+}
+
+makeJar.dependsOn(clearJar)
+tasks.build.dependsOn(makeJar)

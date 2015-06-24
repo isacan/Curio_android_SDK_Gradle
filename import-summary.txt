@@ -1,0 +1,172 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Manifest Merging:
+-----------------
+Your project uses libraries that provide manifests, and your Eclipse
+project did not explicitly turn on manifest merging. In Android Gradle
+projects, manifests are always merged (meaning that contents from your
+libraries' manifests will be merged into the app manifest. If you had
+manually copied contents from library manifests into your app manifest
+you may need to remove these for the app to build correctly.
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+From CurioSDK:
+* .DS_Store
+* LICENSE.txt
+* README.md
+* curio_jar_export.jardesc
+* doc/
+* doc/allclasses-frame.html
+* doc/allclasses-noframe.html
+* doc/com/
+* doc/com/turkcell/
+* doc/com/turkcell/curio/
+* doc/com/turkcell/curio/CurioClient.StaticFeatureSet.html
+* doc/com/turkcell/curio/CurioClient.html
+* doc/com/turkcell/curio/CurioRequestProcessor.html
+* doc/com/turkcell/curio/DBRequestProcessor.html
+* doc/com/turkcell/curio/ICurioResultListener.html
+* doc/com/turkcell/curio/INetworkConnectivityChangeListener.html
+* doc/com/turkcell/curio/class-use/
+* doc/com/turkcell/curio/class-use/CurioClient.StaticFeatureSet.html
+* doc/com/turkcell/curio/class-use/CurioClient.html
+* doc/com/turkcell/curio/class-use/CurioRequestProcessor.html
+* doc/com/turkcell/curio/class-use/DBRequestProcessor.html
+* doc/com/turkcell/curio/class-use/ICurioResultListener.html
+* doc/com/turkcell/curio/class-use/INetworkConnectivityChangeListener.html
+* doc/com/turkcell/curio/model/
+* doc/com/turkcell/curio/model/OfflineRequest.html
+* doc/com/turkcell/curio/model/OnlineRequest.html
+* doc/com/turkcell/curio/model/Screen.html
+* doc/com/turkcell/curio/model/class-use/
+* doc/com/turkcell/curio/model/class-use/OfflineRequest.html
+* doc/com/turkcell/curio/model/class-use/OnlineRequest.html
+* doc/com/turkcell/curio/model/class-use/Screen.html
+* doc/com/turkcell/curio/model/package-frame.html
+* doc/com/turkcell/curio/model/package-summary.html
+* doc/com/turkcell/curio/model/package-tree.html
+* doc/com/turkcell/curio/model/package-use.html
+* doc/com/turkcell/curio/package-frame.html
+* doc/com/turkcell/curio/package-summary.html
+* doc/com/turkcell/curio/package-tree.html
+* doc/com/turkcell/curio/package-use.html
+* doc/com/turkcell/curio/utils/
+* doc/com/turkcell/curio/utils/Constants.html
+* doc/com/turkcell/curio/utils/CurioClientSettings.html
+* doc/com/turkcell/curio/utils/CurioDBContract.BaseOfflineEntryColumns.html
+* doc/com/turkcell/curio/utils/CurioDBContract.CurioOfflineCacheEntry.html
+* doc/com/turkcell/curio/utils/CurioDBContract.CurioPeriodicDispatchEntry.html
+* doc/com/turkcell/curio/utils/CurioDBContract.html
+* doc/com/turkcell/curio/utils/CurioDBHelper.html
+* doc/com/turkcell/curio/utils/CurioLogger.html
+* doc/com/turkcell/curio/utils/CurioUtil.html
+* doc/com/turkcell/curio/utils/NetworkUtil.html
+* doc/com/turkcell/curio/utils/ParameterLoader.html
+* doc/com/turkcell/curio/utils/UUIDGenerator.html
+* doc/com/turkcell/curio/utils/VisitorCodeManager.html
+* doc/com/turkcell/curio/utils/class-use/
+* doc/com/turkcell/curio/utils/class-use/Constants.html
+* doc/com/turkcell/curio/utils/class-use/CurioClientSettings.html
+* doc/com/turkcell/curio/utils/class-use/CurioDBContract.BaseOfflineEntryColumns.html
+* doc/com/turkcell/curio/utils/class-use/CurioDBContract.CurioOfflineCacheEntry.html
+* doc/com/turkcell/curio/utils/class-use/CurioDBContract.CurioPeriodicDispatchEntry.html
+* doc/com/turkcell/curio/utils/class-use/CurioDBContract.html
+* doc/com/turkcell/curio/utils/class-use/CurioDBHelper.html
+* doc/com/turkcell/curio/utils/class-use/CurioLogger.html
+* doc/com/turkcell/curio/utils/class-use/CurioUtil.html
+* doc/com/turkcell/curio/utils/class-use/NetworkUtil.html
+* doc/com/turkcell/curio/utils/class-use/ParameterLoader.html
+* doc/com/turkcell/curio/utils/class-use/UUIDGenerator.html
+* doc/com/turkcell/curio/utils/class-use/VisitorCodeManager.html
+* doc/com/turkcell/curio/utils/package-frame.html
+* doc/com/turkcell/curio/utils/package-summary.html
+* doc/com/turkcell/curio/utils/package-tree.html
+* doc/com/turkcell/curio/utils/package-use.html
+* doc/constant-values.html
+* doc/deprecated-list.html
+* doc/help-doc.html
+* doc/index.html
+* doc/overview-frame.html
+* doc/overview-summary.html
+* doc/overview-tree.html
+* doc/package-list
+* doc/resources/
+* doc/resources/inherit.gif
+* doc/stylesheet.css
+* proguard-project.txt
+From CurioSDKSampleClient:
+* .DS_Store
+* LICENSE.txt
+* ic_launcher-web.png
+* proguard-project.txt
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:19.1.0
+
+Replaced Libraries with Dependencies:
+-------------------------------------
+The importer recognized the following library projects as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the source files in your project were of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the library replacement in the import wizard and try
+again:
+
+google-play-services_lib => [com.google.android.gms:play-services:+]
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+In CurioSDK:
+* AndroidManifest.xml => curioSDK/src/main/AndroidManifest.xml
+* lint.xml => curioSDK/lint.xml
+* src/ => curioSDK/src/main/java/
+* src/.DS_Store => curioSDK/src/main/resources/.DS_Store
+* src/com/.DS_Store => curioSDK/src/main/resources/com/.DS_Store
+* src/com/turkcell/.DS_Store => curioSDK/src/main/resources/com/turkcell/.DS_Store
+* src/com/turkcell/curio/.DS_Store => curioSDK/src/main/resources/com/turkcell/curio/.DS_Store
+In CurioSDKSampleClient:
+* AndroidManifest.xml => curioSDKSampleClient/src/main/AndroidManifest.xml
+* assets/ => curioSDKSampleClient/src/main/assets
+* libs/curiosdk.jar => curioSDKSampleClient/libs/curiosdk.jar
+* lint.xml => curioSDKSampleClient/lint.xml
+* res/ => curioSDKSampleClient/src/main/res/
+* src/ => curioSDKSampleClient/src/main/java/
+* src/.DS_Store => curioSDKSampleClient/src/main/resources/.DS_Store
+* src/com/.DS_Store => curioSDKSampleClient/src/main/resources/com/.DS_Store
+* src/com/turkcell/.DS_Store => curioSDKSampleClient/src/main/resources/com/turkcell/.DS_Store
+* src/com/turkcell/curiosample/.DS_Store => curioSDKSampleClient/src/main/resources/com/turkcell/curiosample/.DS_Store
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

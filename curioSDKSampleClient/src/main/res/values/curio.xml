@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_url">https://curiotest.turkcell.com.tr/api/v2</string>
+	<string name="api_key">f6779470ef9e11e3be425119157960aa</string>
+	<string name="tracking_code">AVS9PYXJ</string>
+    <!--  string name="server_url">https://curio.turkcell.com.tr/api/v2</string>
+	<string name="api_key">32f468f0d9c511e3a0760f5a28372ef6</string>
+    <string name="tracking_code">1X1Y6A6P</string -->
+    <string name="gcm_senderId">642830518623</string>
+    <bool name="auto_push_registration">true</bool>
+    <integer name="session_timeout">2</integer>
+    <bool name="periodic_dispatch_enabled">false</bool>
+    <integer name="dispatch_period">1</integer>
+    <integer name="max_cached_activity_count">50</integer>
+    <bool name="logging_enabled">true</bool>
+</resources>
