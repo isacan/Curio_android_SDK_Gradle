@@ -9,6 +9,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.turkcell.curio.CurioClient;
+import com.turkcell.curio.ICustomIdRegisterListener;
+import com.turkcell.curio.IUnregisterListener;
 
 public class BlankActivity extends Activity {
 
@@ -34,7 +36,12 @@ public class BlankActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				CurioClient.getInstance(BlankActivity.this).sendCustomId("sampleCustomId");
+				CurioClient.getInstance(BlankActivity.this).sendCustomId("sampleCustomId", new ICustomIdRegisterListener() {
+					@Override
+					public void onCustomIdRegisterResponse(boolean isSuccessful, int statusCode) {
+						Log.i(TAG, "Register response is: " + isSuccessful + ", statusCode: " + statusCode);
+					}
+				});
 			}
 		});
 
@@ -43,7 +50,12 @@ public class BlankActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				CurioClient.getInstance(BlankActivity.this).unregisterFromNotificationServer();
+				CurioClient.getInstance(BlankActivity.this).unregisterFromNotificationServer(new IUnregisterListener() {
+					@Override
+					public void onUnregisterResponse(boolean isSuccessful, int statusCode) {
+						Log.i(TAG, "Unregister response is: " + isSuccessful + ", statusCode: " + statusCode);
+					}
+				});
 			}
 		});
 	}

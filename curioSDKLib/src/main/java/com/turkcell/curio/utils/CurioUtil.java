@@ -6,6 +6,15 @@
  */
 package com.turkcell.curio.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.util.Log;
+
+import org.json.JSONArray;
+
+import java.util.List;
 import java.util.UUID;
 
 
@@ -16,24 +25,6 @@ import java.util.UUID;
  *
  */
 public class CurioUtil {
-	
-//	/**
-//	 * !!Legacy method from 8digits. May be removed!!
-//	 * @param urlPrefix
-//	 * @return
-//	 */
-//	public static String formatUrlPrefix(String urlPrefix) {
-//		if (!urlPrefix.startsWith(Constants.HTTP) && !urlPrefix.startsWith(Constants.HTTPS))
-//			urlPrefix = Constants.HTTPS + urlPrefix;
-//
-//		if (urlPrefix.endsWith(Constants.BACKSLASH))
-//			urlPrefix = urlPrefix.substring(0, urlPrefix.length() - 1);
-//
-//		if (urlPrefix.endsWith(Constants.API))
-//			urlPrefix = urlPrefix.substring(0, urlPrefix.length() - (Constants.API.length() + 1));
-//
-//		return urlPrefix;
-//	}
 	
 	/**
 	 * Generates a version 1 Universally Unique Identifier.
@@ -74,5 +65,31 @@ public class CurioUtil {
 		}
 		
 		return type;
+	}
+
+	public static String getInstalledApps(Context context){
+		List<ApplicationInfo> appList = context.getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA);
+
+		JSONArray appArray = new JSONArray();
+		for(ApplicationInfo appInfo : appList){
+			JSONArray appInfoJson = new JSONArray();
+			appInfoJson.put(appInfo.packageName);
+			appInfoJson.put(appInfo.loadLabel(context.getPackageManager()));
+			appArray.put(appInfoJson);
+		}
+
+		return appArray.toString();
+	}
+
+	public static void setAsFirstTimeUse(Context context){
+		SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREF_NAME_CURIO, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putBoolean(Constants.SHARED_PREF_KEY_FIRST_TIME_USE, false);
+		editor.apply();
+	}
+
+	public static boolean isFirstTimeUse(Context context) {
+		SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREF_NAME_CURIO, Context.MODE_PRIVATE);
+		return sharedPreferences.getBoolean(Constants.SHARED_PREF_KEY_FIRST_TIME_USE, true);
 	}
 }

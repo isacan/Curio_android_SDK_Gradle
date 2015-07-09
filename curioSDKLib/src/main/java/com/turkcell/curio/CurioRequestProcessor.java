@@ -38,6 +38,7 @@ import com.turkcell.curio.utils.CurioDBContract.CurioOfflineCacheEntry;
 import com.turkcell.curio.utils.CurioDBContract.CurioPeriodicDispatchEntry;
 import com.turkcell.curio.utils.CurioDBHelper;
 import com.turkcell.curio.utils.CurioLogger;
+import com.turkcell.curio.utils.CurioUtil;
 import com.turkcell.curio.utils.NetworkUtil;
 
 /**
@@ -325,12 +326,8 @@ public class CurioRequestProcessor implements Runnable {
 
 	/**
 	 * Generates name value pair list from given json data for offline requests.
-	 * 
-	 * @param trackingCode
-	 * @param visitorCode
-	 * @param sessionCode
-	 * @param sessionTimeout
-	 * @param json
+	 *
+	 * @param jsonData
 	 * @return
 	 */
 	private List<? extends NameValuePair> generatePairsForOfflineRequest(String jsonData) {
@@ -355,6 +352,9 @@ public class CurioRequestProcessor implements Runnable {
 		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_OS_VERSION, clientInstance.getStaticFeatureSet().getOsVersion()));
 		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_CURIO_SDK_VERSION, clientInstance.getStaticFeatureSet().getSdkVersion()));
 		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_APP_VERSION, clientInstance.getStaticFeatureSet().getAppVersionName()));
+		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_BT_STATE, clientInstance.getStaticFeatureSet().getBtStatus()));
+		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_AVAILABLE_STORAGE, clientInstance.getStaticFeatureSet().getAvailableStorage()));
+		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_BATTERY_LEVEL, clientInstance.getStaticFeatureSet().getBattLevel()));
 		paramList.add(new BasicNameValuePair(Constants.HTTP_PARAM_JSON_DATA, jsonData));
 
 		for (NameValuePair pair : paramList) {
@@ -365,12 +365,8 @@ public class CurioRequestProcessor implements Runnable {
 
 	/**
 	 * Generates name value pair list from given json data for periodic dispatch requests.
-	 * 
-	 * @param trackingCode
-	 * @param visitorCode
-	 * @param sessionCode
-	 * @param sessionTimeout
-	 * @param json
+	 *
+	 * @param jsonData
 	 * @return
 	 */
 	private List<? extends NameValuePair> generatePairsForPeriodicDispatch(String jsonData) {
@@ -454,7 +450,6 @@ public class CurioRequestProcessor implements Runnable {
 	 * Sends online request to the server as HTTP Post request. Uses URLEncoded Form, media type: application/x-www-form-urlencoded
 	 * 
 	 * @param onlineRequest
-	 * @throws CurioApiException
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws UnsupportedEncodingException
@@ -530,6 +525,15 @@ public class CurioRequestProcessor implements Runnable {
 			params.put(Constants.HTTP_PARAM_OS_VERSION, clientInstance.getStaticFeatureSet().getOsVersion());
 			params.put(Constants.HTTP_PARAM_CURIO_SDK_VERSION, clientInstance.getStaticFeatureSet().getSdkVersion());
 			params.put(Constants.HTTP_PARAM_APP_VERSION, clientInstance.getStaticFeatureSet().getAppVersionName());
+			params.put(Constants.HTTP_PARAM_BT_STATE, clientInstance.getStaticFeatureSet().getBtStatus());
+			params.put(Constants.HTTP_PARAM_AVAILABLE_STORAGE, clientInstance.getStaticFeatureSet().getAvailableStorage());
+			params.put(Constants.HTTP_PARAM_BATTERY_LEVEL, clientInstance.getStaticFeatureSet().getBattLevel());
+
+			if(CurioUtil.isFirstTimeUse(context)){
+				params.put(Constants.HTTP_PARAM_INSTALLED_APPS, CurioUtil.getInstalledApps(context));
+				CurioUtil.setAsFirstTimeUse(context);
+			}
+
 		} else {
 			params.put(Constants.HTTP_PARAM_SESSION_CODE, clientInstance.getSessionCode(false));
 			params.put(Constants.HTTP_PARAM_TRACKING_CODE, clientInstance.getStaticFeatureSet().getTrackingCode());
@@ -540,11 +544,13 @@ public class CurioRequestProcessor implements Runnable {
 		List<NameValuePair> newPairs = new ArrayList<NameValuePair>();
 
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			NameValuePair newPair = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
+			if(entry.getValue() != null){
+				NameValuePair newPair = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
 
-			CurioLogger.d(TAG, "PARAM --> " + newPair.getName() + " : " + newPair.getValue());
+				CurioLogger.d(TAG, "PARAM --> " + newPair.getName() + " : " + newPair.getValue());
 
-			newPairs.add(newPair);
+				newPairs.add(newPair);
+			}
 		}
 
 		return newPairs;

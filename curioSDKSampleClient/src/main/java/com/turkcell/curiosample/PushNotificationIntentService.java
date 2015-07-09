@@ -12,6 +12,18 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+/**
+ * !!!!!
+ *
+ * Important: This is just a sample reference implementation.
+ *
+ * Please DO NOT copy and paste this class and code to your real life projects,
+ * since it may cause issues on your project.
+ *
+ * Please write your own code and implementation.
+ *
+ * !!!!!
+ */
 public class PushNotificationIntentService extends IntentService {
 
 	private int notificationId;
@@ -30,7 +42,9 @@ public class PushNotificationIntentService extends IntentService {
 		Log.w("PushIntentSerivce", extras.toString());
 
 		if (!extras.isEmpty()) {
-			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+			String from = extras.getString("from");
+
+			if (!from.equals("google.com/iid") && GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				createNotification(extras);
 			}
 		}

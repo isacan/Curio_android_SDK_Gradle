@@ -17,9 +17,13 @@ import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.os.Build;
@@ -42,6 +46,7 @@ import com.turkcell.curio.utils.CurioLogger;
 import com.turkcell.curio.utils.CurioUtil;
 import com.turkcell.curio.utils.NetworkUtil;
 import com.turkcell.curio.utils.PushUtil;
+import com.turkcell.curio.utils.StorageUtil;
 import com.turkcell.curio.utils.VisitorCodeManager;
 
 /**
@@ -84,6 +89,8 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	private boolean tmpAutoPushRegistration;
 	private int tmpSessionTimeout;
 	private boolean tmpLoggingEnabled;
+	private IUnregisterListener unregisterListener;
+	private ICustomIdRegisterListener customIdRegisterListener;
 
 	/**
 	 * Be sure to call createInstance first.
@@ -166,7 +173,6 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	 * Private constructor.
 	 * 
 	 * @param context
-	 * @param getParamsFromResource
 	 */
 	private CurioClient(Context context) {
 		this.setContext(context);
@@ -269,6 +275,7 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 					CurioClientSettings.getInstance(context).setLoggingEnabled(tmpLoggingEnabled);
 					CurioClientSettings.getInstance(context).setServerUrl(urlPrefix);
 				}
+				CurioLogger.d(TAG, "Static feature set created.");
 				setParamLoadingFinished(true);
 
 				CurioLogger.d(TAG, "Finished loading params and created static feature set on " + System.currentTimeMillis());
@@ -669,17 +676,17 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 		String url = this.getUrlPrefix() + path;
 
 		if (NetworkUtil.getInstance().isConnected()) {
-			boolean shoulBeOnlineRequest = false;
+			boolean shouldBeOnlineRequest = false;
 
 			// start/end session requests should not be included in periodic dispatch
 			if (path.equals(Constants.SERVER_URL_SUFFIX_SESSION_START) || path.equals(Constants.SERVER_URL_SUFFIX_SESSION_END)) {
-				shoulBeOnlineRequest = true;
+				shouldBeOnlineRequest = true;
 			}
 
 			/**
 			 * If the request is not a start/end session type and periodic dispatch is enabled, store it as offline request, else send as online.
 			 */
-			if (!shoulBeOnlineRequest && CurioClient.getInstance().isPeriodicDispatchEnabled()) {
+			if (!shouldBeOnlineRequest && CurioClient.getInstance().isPeriodicDispatchEnabled()) {
 				OfflineRequest offlineRequest = new OfflineRequest(url, params);
 				CurioLogger.d(TAG, "[PERIODIC DISPATCH REQ] added to queue. URL:" + url + ", SC: " + offlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) + ", HC:"
 						+ offlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE));
@@ -740,7 +747,6 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 
 	/**
 	 * 
-	 * @param customId
 	 */
 	private void sendPushOpenedMsg() {
 		if (!getStaticFeatureSet().autoPushRegistration) {
@@ -813,20 +819,36 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 							isSessionStartSent = true;
 						}
 						sendRegistrationId(getContext(), registrationId);
+					}else{
+						if(customIdRegisterListener != null){
+							customIdRegisterListener.onCustomIdRegisterResponse(false, statusCode);
+						}
+						CurioLogger.e(TAG, "Failed to send registration id. Server responded with status code: " + statusCode);
 					}
 				} else if (statusCode == HttpStatus.SC_OK) {
 					unauthCount = 0;
+					if(customIdRegisterListener != null){
+						customIdRegisterListener.onCustomIdRegisterResponse(true, statusCode);
+					}
 					CurioLogger.d(TAG, "Registration id has been successfully sent to push server.");
 				} else {
+					if(customIdRegisterListener != null){
+						customIdRegisterListener.onCustomIdRegisterResponse(false, statusCode);
+					}
 					CurioLogger.e(TAG, "Failed to send registration id. Server responded with status code: " + statusCode);
 				}
 			}
 		};
 
-		String pushServerURL = CurioClientSettings.getInstance(context).getServerUrl() + Constants.SERVER_URL_SUFFIX_PUSH_DATA;
-
-		OnlineRequest onlineRequest = new OnlineRequest(pushServerURL, params, callback, CurioRequestProcessor.SECOND_PRIORITY);
-		CurioRequestProcessor.pushToOnlineQueue(onlineRequest);
+		if (NetworkUtil.getInstance().isConnected()){
+			String pushServerURL = CurioClientSettings.getInstance(context).getServerUrl() + Constants.SERVER_URL_SUFFIX_PUSH_DATA;
+			OnlineRequest onlineRequest = new OnlineRequest(pushServerURL, params, callback, CurioRequestProcessor.SECOND_PRIORITY);
+			CurioRequestProcessor.pushToOnlineQueue(onlineRequest);
+		}else{
+			if(customIdRegisterListener != null){
+				customIdRegisterListener.onCustomIdRegisterResponse(false, Constants.ERROR_CODE_NO_NETWORK);
+			}
+		}
 	}
 
 	/**
@@ -862,7 +884,7 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	/**
 	 * Custom id. Optional use.
 	 * 
-	 * @param customParam
+	 * @param customId
 	 */
 	public void setCustomId(String customId) {
 		this.customId = customId;
@@ -874,6 +896,19 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 
 	/**
 	 * Sends custom id to push notification server.
+	 *
+	 * Before calling this method GCM registration id should be acquired and ready, or this method will not send custom id to the server.
+	 *
+	 * @param customId
+	 */
+	public void sendCustomId(String customId, ICustomIdRegisterListener customIdRegisterListener) {
+		this.customIdRegisterListener = customIdRegisterListener;
+		sendCustomId(customId);
+	}
+
+
+	/**
+	 * Sends custom id to push notification server.
 	 * 
 	 * Before calling this method GCM registration id should be acquired and ready, or this method will not send custom id to the server.
 	 * 
@@ -882,6 +917,11 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	public void sendCustomId(String customId) {
 		if (!getStaticFeatureSet().autoPushRegistration) {
 			CurioLogger.e(TAG, "Curio Auto Push Registration is disabled. You cannot call sendCustomId() method.");
+
+			if(customIdRegisterListener != null){
+				customIdRegisterListener.onCustomIdRegisterResponse(false, Constants.ERROR_CODE_AUTO_PUSH_REGISTERATION_NOT_ENABLED);
+			}
+
 			return;
 		}
 
@@ -894,6 +934,15 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 		} else {
 			sendRegistrationId(context, registrationId);
 		}
+	}
+
+	public void unregisterFromNotificationServer(IUnregisterListener unregisterListener) {
+		this.unregisterListener = unregisterListener;
+		unregisterFromNotificationServer();
+	}
+
+	public void removeUnregisterListener(){
+		this.unregisterListener = null;
 	}
 
 	/**
@@ -936,21 +985,38 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 								isSessionStartSent = true;
 							}
 							unregisterFromNotificationServer();
+						}else{
+							if(unregisterListener != null){
+								unregisterListener.onUnregisterResponse(false, statusCode);
+							}
+							CurioLogger.e(TAG, "Failed to unregister. Server responded with status code: " + statusCode);
 						}
 					} else if (statusCode == HttpStatus.SC_OK) {
 						unauthCount = 0;
 						PushUtil.deleteRegistrationId(context);
+						if(unregisterListener != null){
+							unregisterListener.onUnregisterResponse(true, statusCode);
+						}
 						CurioLogger.d(TAG, "Unregister request successfully send to push server.");
 					} else {
+						if(unregisterListener != null){
+							unregisterListener.onUnregisterResponse(false, statusCode);
+						}
 						CurioLogger.e(TAG, "Failed to unregister. Server responded with status code: " + statusCode);
 					}
 				}
 			};
 
-			String pushServerURL = CurioClientSettings.getInstance(context).getServerUrl() + Constants.SERVER_URL_SUFFIX_UNREGISTER;
+			if (NetworkUtil.getInstance().isConnected()){
+				String pushServerURL = CurioClientSettings.getInstance(context).getServerUrl() + Constants.SERVER_URL_SUFFIX_UNREGISTER;
+				OnlineRequest onlineRequest = new OnlineRequest(pushServerURL, params, callback, CurioRequestProcessor.SECOND_PRIORITY);
+				CurioRequestProcessor.pushToOnlineQueue(onlineRequest);
+			}else{
+				if(unregisterListener != null){
+					unregisterListener.onUnregisterResponse(false, Constants.ERROR_CODE_NO_NETWORK);
+				}
+			}
 
-			OnlineRequest onlineRequest = new OnlineRequest(pushServerURL, params, callback, CurioRequestProcessor.SECOND_PRIORITY);
-			CurioRequestProcessor.pushToOnlineQueue(onlineRequest);
 		} else {
 			CurioLogger.w(TAG, "No GCM registration id found. Unregister request will not be sent.");
 		}
@@ -1086,6 +1152,10 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 		private String sdkVersion;
 		private String appVersionName;
 		private String gcmSenderId;
+		private String battLevel;
+		private String btStatus;
+		private String availableStorage;
+
 		private boolean autoPushRegistration;
 
 		public StaticFeatureSet(String apiKey, String trackingCode, String visitorCode, int sessionTimeout, String gcmSenderId, boolean autoPushRegistration) {
@@ -1136,6 +1206,19 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 				CurioLogger.e(TAG, e.getMessage(), e);
 			}
 
+			//Get battery level from sticky system broadcast ACTION_BATTERY_CHANGED
+			Intent battLevelIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+			int battLevel = battLevelIntent.getIntExtra(Constants.INTENT_PARAM_BATTERY_LEVEL, 0);
+
+			//Get Bluetooth status
+			Boolean isBtOn = null;
+
+			//But first check if Bluetooth permission is given to prevent any permission exceptions
+			if(checkIfBTPermissionIsGranted()){
+				BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+				isBtOn = btAdapter.isEnabled();
+			}
+
 			this.apiKey = apiKey;
 			this.trackingCode = trackingCode;
 			this.visitorCode = visitorCode;
@@ -1159,6 +1242,16 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 			this.appVersionName = appVersionName;
 			this.gcmSenderId = gcmSenderId;
 			this.autoPushRegistration = autoPushRegistration;
+
+			//Other system info
+			this.battLevel = Integer.toString(battLevel);
+
+			if(isBtOn != null){
+				this.btStatus = isBtOn.booleanValue() ? Constants.BT_STATUS_ON : Constants.BT_STATUS_OFF;
+			}else{
+				this.btStatus = Constants.BT_STATUS_NO_PERMISSON;
+			}
+			this.availableStorage = Long.toString(StorageUtil.getTotalAvailableMemory());
 		}
 
 		public String getApiKey() {
@@ -1257,6 +1350,12 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 			return gcmSenderId;
 		}
 
+		public String getBtStatus() { return btStatus; }
+
+		public String getAvailableStorage() { return availableStorage;}
+
+		public String getBattLevel() { return battLevel; }
+
 		public void setGcmSenderId(String gcmSenderId) {
 			this.gcmSenderId = gcmSenderId;
 		}
@@ -1269,6 +1368,11 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 			this.autoPushRegistration = autoPushRegistration;
 		}
 
+	}
+
+	private boolean checkIfBTPermissionIsGranted() {
+		int res = getContext().checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH);
+		return (res == PackageManager.PERMISSION_GRANTED);
 	}
 
 	protected boolean offlineRequestExist() {
