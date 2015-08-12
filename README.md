@@ -44,8 +44,23 @@ All configuration of Curio is made through XML configuration file. For this, cre
 
 **gcm\_senderId** [Required] GCM Sender Id parameter, can be obtained from Turkcell. Required if auto push registration is enabled otherwise no need to specify.
 
-##Integration with Android Studio Project
+##Integration with Android Studio Projects
+Integration with Android Gradle projects is in two steps;
 
+1-Add jitpack repo URL into root build.gradle file as below:
+	repositories {
+   		maven {
+       		url "https://jitpack.io"
+   		}
+	}
+	
+2-Add Curio's dependency into app's build.gradle file (change version with the latest):
+	dependencies {
+       	compile 'com.github.Turkcell:Curio_android_SDK_Gradle:v1.07'
+	}
+	
+##Integration with Eclipse Projects
+Integration with Android Gradle projects is in two steps;	
 
 ##Dependencies:
 Curio SDK uses [Google Ad Id](https://developer.android.com/google/play-services/id.html), so its dependent to **Google Play Services**. You should add Play Services library dependencey to your application project.
