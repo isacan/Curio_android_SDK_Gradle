@@ -9,7 +9,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
-        versionName "v1.07"
+        versionName "1.0.9"
     }
 
     buildTypes {
@@ -21,7 +21,8 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:+'
+    compile 'com.google.android.gms:play-services-ads:7.5.0'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
 }
 
 artifacts {

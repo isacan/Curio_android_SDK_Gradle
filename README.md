@@ -1,6 +1,9 @@
-#Curio Android SDK 1.0.8
+#Curio Android SDK 1.0.9
 
 [Curio](https://gui-curio.turkcell.com.tr) is Turkcell's mobile analytics system, and this is Curio's Android Client SDK library. Applications developed for ***Android 2.3.3 Gingerbread (API Level 10) and higher*** can easily use Curio mobile analytics with this library.
+
+#What's New
+Minor update for Curio SDK dependencies. Google Play Services dependencies slimmed down to gcm and ads.
 
 #Quick Startup Guide
 
@@ -58,14 +61,14 @@ Integration with Android Gradle projects is in two steps;
 2-Add Curio's dependency into app's build.gradle file (change version with the latest):
 	
 	dependencies {
-       	compile 'com.github.Turkcell:Curio_android_SDK_Gradle:v1.07'
+       	compile 'com.github.Turkcell:Curio_android_SDK_Gradle:1.0.8'
 	}
 	
 ##Integration with Eclipse Projects
 You can still use .jar library version of Curio SDK with your Eclipse projects. You can always download the newest version of the **curiosdk.jar** from [here](https://github.com/Turkcell/Curio_android_SDK_Gradle/raw/master/curioSDKLib/jarLib/curiosdk.jar)
 
 ##Dependencies:
-Curio SDK uses [Google Ad Id](https://developer.android.com/google/play-services/id.html), so its dependent to **Google Play Services**. You should add Play Services library dependencey to your application project.
+Curio SDK uses [Google Ad Id](https://developer.android.com/google/play-services/id.html), and GCM so its dependent to **Google Play Services**. You should add Play Services library dependencey to your application project.
 
 ##Usage:
 
