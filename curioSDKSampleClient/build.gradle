@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.turkcell.curiosample"
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 22
     }
 

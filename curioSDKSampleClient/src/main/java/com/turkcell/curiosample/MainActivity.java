@@ -30,19 +30,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		/*
-//		CurioClient.getInstance(this, false).setServerUrl("https://curio.turkcell.com.tr/api/v2");
-		CurioClient.getInstance(this, false).setServerUrl("https://curiotest.turkcell.com.tr/api/v2");
-//		CurioClient.getInstance(this, false).setTrackingCode("1X1Y6A6P");
-		CurioClient.getInstance(this, false).setTrackingCode("AVS9PYXJ");
-//		CurioClient.getInstance(this, false).setApiKey("32f468f0d9c511e3a0760f5a28372ef6");
-		CurioClient.getInstance(this, false).setApiKey("f6779470ef9e11e3be425119157960aa");
-		CurioClient.getInstance(this, false).setGcmSenderId("642830518623");
-		CurioClient.getInstance(this, false).setAutoPushRegistrationEnabled(true);
-		CurioClient.getInstance(this, false).setSessionTimeout(4);
-		CurioClient.getInstance(this, false).setPeriodicDispatchEnabled(false);
-		CurioClient.getInstance(this, false).setLoggingEnabled(true);*/
-		
 		//If your application receives push notification. Optional
 		CurioClient.getInstance(this).getPushData(getIntent());
 		
