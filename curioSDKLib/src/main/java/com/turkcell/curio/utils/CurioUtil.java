@@ -62,6 +62,8 @@ public class CurioUtil {
 			type = 3;
 		}else if(url.endsWith(Constants.SERVER_URL_SUFFIX_SEND_EVENT)){
 			type = 4;
+		}else if(url.endsWith(Constants.SERVER_URL_SUFFIX_EVENT_END)){
+			type = 7;
 		}
 		
 		return type;

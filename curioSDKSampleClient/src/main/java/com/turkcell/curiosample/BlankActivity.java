@@ -31,6 +31,15 @@ public class BlankActivity extends Activity {
 			}
 		});
 
+		Button btnEndEvent = (Button)findViewById(R.id.endEvent);
+		btnEndEvent.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				CurioClient.getInstance(BlankActivity.this).endEvent("Test Event", "testEvent", 35000);
+			}
+		});
+
 		Button btnSendCustomId = (Button)findViewById(R.id.sendCustomId);
 		btnSendCustomId.setOnClickListener(new OnClickListener() {
 

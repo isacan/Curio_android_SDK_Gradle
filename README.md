@@ -1,9 +1,9 @@
-#Curio Android SDK 1.0.9
+#Curio Android SDK 1.1.0
 
 [Curio](https://gui-curio.turkcell.com.tr) is Turkcell's mobile analytics system, and this is Curio's Android Client SDK library. Applications developed for ***Android 2.3.3 Gingerbread (API Level 10) and higher*** can easily use Curio mobile analytics with this library.
 
 #What's New
-Minor update for Curio SDK dependencies. Google Play Services dependencies slimmed down to gcm and ads.
+endEvent method added for measuring timed events such as a user's article reading duration or game play duration etc.
 
 #Quick Startup Guide
 
@@ -103,6 +103,16 @@ Should be called once per activity class or fragment.
 	CurioClient.getInstance(context).sendEvent("sample event key", "sample event value");
 	...
 
+###Ending a Timed Event:
+You can send a timed event's duration to Curio server by calling this method. Developers are responsible for measuring/calculation the durations of events and passing them as duration parameter of the endEvent method as below. Durations should be in miliseconds.
+You should first call sendEvent at the start of the event, and then call endEvent at the end of the event with calculated duration parameter. **endEvent method should be called with the same key-value pair of corresponding sendEvent method, that's important.**
+
+	...
+	CurioClient.getInstance(context).endEvent("sample event key", "sample event value", 35045);
+	...
+
+You can also send categorized event keys using ">" sign in the key string. Such as "Cat1>Cat2>Cat3".
+	
 ###Ending Session:
 Session ending should be in onStop() method of application's main (or exit) activity class, and also it should be checked if application is actually finishing or just going to another activity with isFinishing() method. This check should be made on main (or exit) activity class.
 

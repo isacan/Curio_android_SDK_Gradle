@@ -13,9 +13,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/sendCustomId"
+        android:layout_above="@+id/endEvent"
         android:layout_marginBottom="15dp"
         android:text="Send Event" />
+
+    <Button
+        android:id="@+id/endEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/sendCustomId"
+        android:layout_marginBottom="15dp"
+        android:text="End Event" />
 
     <Button
         android:id="@+id/sendCustomId"

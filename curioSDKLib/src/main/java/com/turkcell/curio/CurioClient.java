@@ -67,6 +67,7 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	private boolean isPeriodicDispatchEnabled;
 	private int dispatchPeriod;
 	private Map<String, Screen> contextHitcodeMap = new HashMap<String, Screen>();
+	private Map<String, String> contextEventcodeMap = new HashMap<String, String>();
 	private CurioRequestProcessor curioRequestProcessor;
 	private DBRequestProcessor dbRequestProcessor;
 	private boolean endingSession = false;
@@ -112,7 +113,7 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 	 */
 	public static synchronized CurioClient createInstance(Context context) {
 		if (instance == null) {
-			instance = new CurioClient(context);
+			instance = new CurioClient(context.getApplicationContext());
 
 			instance.startDBRequestProcessorThread();
 			instance.startMainRequestProcessorThread();
@@ -635,13 +636,105 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 
 		ICurioResultListener callback = null;
 
-		callback = new ICurioResultListener() {
+		if (isPeriodicDispatchEnabled || isOfflineCachingOn) {
+			String generatedEventcode = CurioUtil.generateRandomUUID();
+			contextEventcodeMap.put(key + value, generatedEventcode);
+			params.put(Constants.HTTP_PARAM_EVENT_CODE, generatedEventcode);
+			CurioLogger.d(TAG, "PD: " + isPeriodicDispatchEnabled + ", OC: " + isOfflineCachingOn + ", generatedEventcode " + generatedEventcode + " put into map for " + key + value);
+		} else {
+			CurioLogger.d(TAG, "PD: " + isPeriodicDispatchEnabled + ", OC: " + isOfflineCachingOn);
+			callback = new ICurioResultListener() {
+				@Override
+				public void handleResult(int statusCode, JSONObject result) {
+					if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+						if (unauthCount <= 5) {
+							unauthCount++;
+							CurioLogger.d(TAG, "Send Event - Try count: " + unauthCount);
+
+							/**
+							 * If sessionStart request not already sent, 1-Stop second and third priority request queue processing. 2-Send sessionStart request. 3-Set sessionStartsent flag.
+							 */
+							if (!isSessionStartSent) {
+								curioRequestProcessor.setLowerPriorityQueueProcessingStatus(false);
+								startSession(true);
+								isSessionStartSent = true;
+							}
+							sendEvent(key, value);
+						}
+					} else if (statusCode == HttpStatus.SC_OK) {
+						unauthCount = 0;
+						if (result != null) {
+							try {
+								String returnedEventCode = result.getString(Constants.JSON_NODE_EVENT_CODE);
+								contextEventcodeMap.put(key + value, returnedEventCode);
+								CurioLogger.d(TAG, "Server responded OK. Event code: " + returnedEventCode);
+							} catch (JSONException e) {
+								CurioLogger.e(TAG, e.getMessage());
+							}
+						} else {
+							CurioLogger.d(TAG, "Result is null, will not process.");
+						}
+					} else {
+						CurioLogger.d(TAG, "Failed to send event. Server responded with status code: " + statusCode);
+					}
+				}
+			};
+		}
+
+		this.pushRequestToQueue(Constants.SERVER_URL_SUFFIX_SEND_EVENT, params, callback, CurioRequestProcessor.THIRD_PRIORITY);
+	}
+
+	/**
+	 * Sends an end of a event to server.
+	 *
+	 * @param key
+	 *            Key for the event
+	 * @param value
+	 *            Value for the event
+	 */
+	public void endEvent(final String key, final String value, final long duration){
+		/**
+		 * If configuration param loading is not finished, post a delayed request again in 500 ms.
+		 */
+		if (!isParamLoadingFinished()) {
+			CurioLogger.d(TAG, "endEvent called but config param loading is not finished yet, will try in 500 ms again.");
+
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					endEvent(key, value, duration);
+				}
+			}, 500);
+			return;
+		}
+
+		String eventCode = contextEventcodeMap.get(key + value);
+
+		String urlEncodedKey = "";
+		String urlEncodedValue = "";
+
+		try {
+			urlEncodedKey = URLEncoder.encode(key, Constants.UTF8_ENCODING).replace("\\+", " ");
+			urlEncodedValue = URLEncoder.encode(value, Constants.UTF8_ENCODING).replace("\\+", " ");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put(Constants.HTTP_PARAM_SESSION_CODE, this.getSessionCode(false));
+		params.put(Constants.HTTP_PARAM_EVENT_CODE, eventCode);
+		params.put(Constants.HTTP_PARAM_EVENT_KEY, urlEncodedKey);
+		params.put(Constants.HTTP_PARAM_EVENT_VALUE, urlEncodedValue);
+		params.put(Constants.HTTP_PARAM_EVENT_DURATION, duration);
+
+		ICurioResultListener callback = new ICurioResultListener() {
 			@Override
 			public void handleResult(int statusCode, JSONObject result) {
 				if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
 					if (unauthCount <= 5) {
 						unauthCount++;
-						CurioLogger.d(TAG, "Send Event - Try count: " + unauthCount);
+						CurioLogger.d(TAG, "End Event - Try count: " + unauthCount);
 
 						/**
 						 * If sessionStart request not already sent, 1-Stop second and third priority request queue processing. 2-Send sessionStart request. 3-Set sessionStartsent flag.
@@ -651,17 +744,17 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 							startSession(true);
 							isSessionStartSent = true;
 						}
-						sendEvent(key, value);
+						endEvent(key, value, duration);
 					}
 				} else if (statusCode == HttpStatus.SC_OK) {
-					CurioLogger.d(TAG, "Server responded OK. Event sent.");
+					CurioLogger.d(TAG, "Server responded OK. Event ended.");
 				} else {
-					CurioLogger.d(TAG, "Failed to send event. Server responded with status code: " + statusCode);
+					CurioLogger.d(TAG, "Failed to end event. Server responded with status code: " + statusCode);
 				}
 			}
 		};
 
-		this.pushRequestToQueue(Constants.SERVER_URL_SUFFIX_SEND_EVENT, params, callback, CurioRequestProcessor.THIRD_PRIORITY);
+		this.pushRequestToQueue(Constants.SERVER_URL_SUFFIX_EVENT_END, params, callback, CurioRequestProcessor.THIRD_PRIORITY);
 	}
 
 	/**
@@ -688,23 +781,21 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 			 */
 			if (!shouldBeOnlineRequest && CurioClient.getInstance().isPeriodicDispatchEnabled()) {
 				OfflineRequest offlineRequest = new OfflineRequest(url, params);
-				CurioLogger.d(TAG, "[PERIODIC DISPATCH REQ] added to queue. URL:" + url + ", SC: " + offlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) + ", HC:"
-						+ offlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE));
+				CurioLogger.d(TAG, "[PERIODIC DISPATCH REQ] added to queue. URL:" + url + ", SC: " + offlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) +
+						", HC:" + offlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE) +
+						", EC:" + offlineRequest.getParams().get(Constants.HTTP_PARAM_EVENT_CODE));
 				DBRequestProcessor.pushToPeriodicDispatchDBQueue(offlineRequest);
 			} else {
 				OnlineRequest onlineRequest = new OnlineRequest(url, params, callback, priority);
-				CurioLogger.d(
-						TAG,
-						"[ONLINE REQ] added to queue. URL:" + url + ", SC: " + onlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) + ", HC:"
+				CurioLogger.d(TAG, "[ONLINE REQ] added to queue. URL:" + url + ", SC: " + onlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) + ", HC:"
 								+ onlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE));
 				CurioRequestProcessor.pushToOnlineQueue(onlineRequest);
 			}
 		} else {
 			OfflineRequest offlineRequest = new OfflineRequest(url, params);
-			CurioLogger.d(
-					TAG,
-					"[OFFLINE REQ] added to queue. URL:" + url + ", SC: " + offlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) + ", HC:"
-							+ offlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE));
+			CurioLogger.d(TAG, "[OFFLINE REQ] added to queue. URL:" + url + ", SC: " + offlineRequest.getParams().get(Constants.HTTP_PARAM_SESSION_CODE) +
+					", HC:" + offlineRequest.getParams().get(Constants.HTTP_PARAM_HIT_CODE) +
+					", EC:" + offlineRequest.getParams().get(Constants.HTTP_PARAM_EVENT_CODE));
 			setOfflineRequestExist(true);
 			DBRequestProcessor.pushToOfflineDBQueue(offlineRequest);
 		}
