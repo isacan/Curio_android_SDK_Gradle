@@ -104,7 +104,7 @@ Should be called once per activity class or fragment.
 	...
 
 ###Ending a Timed Event:
-You can send a timed event's duration to Curio server by calling this method. Developers are responsible for measuring/calculation the durations of events and passing them as duration parameter of the endEvent method as below. Durations should be in miliseconds.
+You can send a timed event's duration to Curio server by calling this method. Developers are responsible for measuring/calculating durations of events and passing them as duration parameter of the endEvent method as below. Durations should be in miliseconds.
 You should first call sendEvent at the start of the event, and then call endEvent at the end of the event with calculated duration parameter. **endEvent method should be called with the same key-value pair of corresponding sendEvent method, that's important.**
 
 	...
