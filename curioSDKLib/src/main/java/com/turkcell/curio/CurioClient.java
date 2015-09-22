@@ -39,6 +39,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.view.Display;
 import android.view.WindowManager;
@@ -1317,8 +1318,23 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 
 			//But first check if Bluetooth permission is given to prevent any permission exceptions
 			if(checkIfBTPermissionIsGranted()){
-				BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-				isBtOn = btAdapter.isEnabled();
+
+				BluetoothAdapter btAdapter = null;
+				try {
+					btAdapter = BluetoothAdapter.getDefaultAdapter();
+				} catch (RuntimeException e) {
+					//Can: This is a known bug for Android 2.3.x, 3.x and some 4.x
+					//https://code.google.com/p/android/issues/detail?id=16587
+					//System throws exception when getDefaultAdapter() called on a background thread.
+					//This is a work around for that.
+					Looper.prepare();
+					btAdapter = BluetoothAdapter.getDefaultAdapter();
+				}
+
+				//If it's emulator btAdapter will be null, so check if it's null
+				if(btAdapter != null){
+					isBtOn = btAdapter.isEnabled();
+				}
 			}
 
 			this.apiKey = apiKey;
