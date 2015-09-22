@@ -1,12 +1,12 @@
 package com.turkcell.curiosample;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.turkcell.curio.CurioClient;
 
-public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
+public class MainActivity extends ActionBarActivity implements ActionBar.OnNavigationListener {
 
 	private static final String TAG = "MainActivity";
 
@@ -42,7 +42,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 		setContentView(R.layout.activity_main);
 
 		// Set up the action bar to show a dropdown list.
-		final ActionBar actionBar = getActionBar();
+		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
@@ -57,14 +57,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
 		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-			getActionBar().setSelectedNavigationItem(savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
+			getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
 		}
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current dropdown position.
-		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getActionBar().getSelectedNavigationIndex());
+		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getSupportActionBar().getSelectedNavigationIndex());
 	}
 
 	@Override
