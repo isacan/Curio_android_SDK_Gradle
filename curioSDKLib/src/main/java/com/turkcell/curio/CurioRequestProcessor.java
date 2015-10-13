@@ -540,10 +540,10 @@ public class CurioRequestProcessor implements Runnable {
 			params.put(Constants.HTTP_PARAM_AVAILABLE_STORAGE, clientInstance.getStaticFeatureSet().getAvailableStorage());
 			params.put(Constants.HTTP_PARAM_BATTERY_LEVEL, clientInstance.getStaticFeatureSet().getBattLevel());
 
-			if(CurioUtil.isFirstTimeUse(context)){
-				params.put(Constants.HTTP_PARAM_INSTALLED_APPS, CurioUtil.getInstalledApps(context));
-				CurioUtil.setAsFirstTimeUse(context);
-			}
+//			if(CurioUtil.isFirstTimeUse(context)){
+//				params.put(Constants.HTTP_PARAM_INSTALLED_APPS, CurioUtil.getInstalledApps(context));
+//				CurioUtil.setAsFirstTimeUse(context);
+//			}
 
 		} else {
 			params.put(Constants.HTTP_PARAM_SESSION_CODE, clientInstance.getSessionCode(false));

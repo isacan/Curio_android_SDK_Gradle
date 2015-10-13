@@ -80,19 +80,20 @@ public class CurioUtil {
 		return type;
 	}
 
-	public static String getInstalledApps(Context context){
-		List<ApplicationInfo> appList = context.getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA);
-
-		JSONArray appArray = new JSONArray();
-		for(ApplicationInfo appInfo : appList){
-			JSONArray appInfoJson = new JSONArray();
-			appInfoJson.put(appInfo.packageName);
-			appInfoJson.put(appInfo.loadLabel(context.getPackageManager()));
-			appArray.put(appInfoJson);
-		}
-
-		return appArray.toString();
-	}
+	//We don't and shouldn't use this.
+//	public static String getInstalledApps(Context context){
+//		List<ApplicationInfo> appList = context.getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA);
+//
+//		JSONArray appArray = new JSONArray();
+//		for(ApplicationInfo appInfo : appList){
+//			JSONArray appInfoJson = new JSONArray();
+//			appInfoJson.put(appInfo.packageName);
+//			appInfoJson.put(appInfo.loadLabel(context.getPackageManager()));
+//			appArray.put(appInfoJson);
+//		}
+//
+//		return appArray.toString();
+//	}
 
 	public static void setAsFirstTimeUse(Context context){
 		SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREF_NAME_CURIO, Context.MODE_PRIVATE);

@@ -136,7 +136,7 @@ public class Constants {
 
 	public static final int JELLY_BEAN_MR2_4_3_SDK_INT = 18;
 	//Important, update this value on every version update!!!
-	public static final String CURIO_SDK_VER = "1.1.2";
+	public static final String CURIO_SDK_VER = "1.1.3";
 	public static final String SHARED_PREF_NAME_GCM = "gcm";
 	public static final String SHARED_PREF_NAME_CURIO = "curio";
 	public static final String SHARED_PREF_KEY_GCM_REGID = "gcm_registration_id";
