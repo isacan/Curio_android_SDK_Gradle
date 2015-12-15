@@ -1,9 +1,9 @@
-#Curio Android SDK 1.1.3
+#Curio Android SDK 1.1.4
 
 [Curio](https://gui-curio.turkcell.com.tr) is Turkcell's mobile analytics system, and this is Curio's Android Client SDK library. Applications developed for ***Android 2.3.3 Gingerbread (API Level 10) and higher*** can easily use Curio mobile analytics with this library.
 
 #What's New
-Installed app fetch feature is disabled.
+User tagging feature added.
 
 #Quick Startup Guide
 
@@ -159,6 +159,10 @@ or you can call sendCustomId(String) method any time in your app after you call 
 	CurioClient.getInstance(context).sendCustomId("sampleCustomId");
 	...
 
+**Note:** You should use the newer version of sendCustomId method which has the listener parameter: 
+
+	void sendCustomId(String customId, ICustomIdRegisterListener customIdRegisterListener);
+
 ###Unregistering from Push Notification Server (if auto push registration is enabled):
 You can call unregisterFromNotificationServer() method from you app to unregister your app from Curio Push notification server. After calling this method as below, your app will not receive push notifications:
 
@@ -167,6 +171,23 @@ You can call unregisterFromNotificationServer() method from you app to unregiste
 	...
 
 Actually that's all you need to do in your application for a quick and simple integration. For more detail, please keep reading next sections.
+
+**Note:** You should use the newer version of unregisterFromNotificationServer method which has the listener parameter: 
+
+	void unregisterFromNotificationServer(IUnregisterListener unregisterListener);
+
+###User Tagging:
+
+Your applications can set tags for individual users, and query already set tags.
+
+For sending tags:
+
+	void sendUserTags(final Map<String, String> userTagValueMap, final IUserTagsResponseListener userTagsResponseListener)
+
+For querying tags:
+
+	void getUserTags(IUserTagsResponseListener userTagsResponseListener)
+
 
 #API and Usage Details
 ##Initialization

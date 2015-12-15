@@ -998,12 +998,15 @@ public class CurioClient implements INetworkConnectivityChangeListener {
 
 
     /**
+     * @Deprecated use sendCustomId(String customId, ICustomIdRegisterListener customIdRegisterListener) instead.
+     *
      * Sends custom id to push notification server.
      * <p/>
      * Before calling this method GCM registration id should be acquired and ready, or this method will not send custom id to the server.
      *
      * @param customId
      */
+    @Deprecated
     public void sendCustomId(String customId) {
         if (!getStaticFeatureSet().autoPushRegistration) {
             CurioLogger.e(TAG, "Curio Auto Push Registration is disabled. You cannot call sendCustomId() method.");
@@ -1036,8 +1039,10 @@ public class CurioClient implements INetworkConnectivityChangeListener {
     }
 
     /**
+     * @Deprecated use unregisterFromNotificationServer(IUnregisterListener unregisterListener) instead.
      * Unregisters parent app from push server.
      */
+    @Deprecated
     public void unregisterFromNotificationServer() {
         if (!getStaticFeatureSet().autoPushRegistration) {
             CurioLogger.e(TAG, "Curio Auto Push Registration is disabled. You cannot call unregisterFromNotificationServer() method.");
@@ -1176,6 +1181,11 @@ public class CurioClient implements INetworkConnectivityChangeListener {
         this.userTagsResponseListener = null;
     }
 
+    /**
+     * Query already set tags. Returns key/value map for user tags.
+     *
+     * @param userTagsResponseListener
+     */
     public void getUserTags(IUserTagsResponseListener userTagsResponseListener) {
         if (userTagsResponseListener == null) {
             CurioLogger.w(TAG, "Listener parameter cannot be null for getUserTags method.");
