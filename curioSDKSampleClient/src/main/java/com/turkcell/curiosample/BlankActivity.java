@@ -11,6 +11,12 @@ import android.widget.Button;
 import com.turkcell.curio.CurioClient;
 import com.turkcell.curio.ICustomIdRegisterListener;
 import com.turkcell.curio.IUnregisterListener;
+import com.turkcell.curio.IUserTagsResponseListener;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BlankActivity extends Activity {
 
@@ -64,6 +70,51 @@ public class BlankActivity extends Activity {
 					public void onUnregisterResponse(boolean isSuccessful, int statusCode) {
 						Log.i(TAG, "Unregister response is: " + isSuccessful + ", statusCode: " + statusCode);
 					}
+				});
+			}
+		});
+
+
+		Button btnSendTags = (Button)findViewById(R.id.sendTags);
+
+		final Map<String, String> tagMap = new HashMap<String, String>();
+		tagMap.put("age", "32");
+		tagMap.put("gender", "male");
+		tagMap.put("color", "blue");
+
+		btnSendTags.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				CurioClient.getInstance(BlankActivity.this).sendUserTags(tagMap, new IUserTagsResponseListener() {
+					@Override
+					public void onSendUserTagsResponse(boolean isSuccessful, int statusCode) {
+						Log.i(TAG, "Send user tag response is: " + isSuccessful + ", statusCode: " + statusCode);
+					}
+
+					@Override
+					public void onGetUserTagsResponse(Map<String, String> tagMap, int statusCode) {
+
+					}
+				});
+			}
+		});
+
+		Button btnGetTags = (Button)findViewById(R.id.getTags);
+
+		btnGetTags.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				CurioClient.getInstance(BlankActivity.this).getUserTags(new IUserTagsResponseListener() {
+					@Override
+					public void onSendUserTagsResponse(boolean isSuccessful, int statusCode) {
+
+					}
+
+					@Override
+					public void onGetUserTagsResponse(Map<String, String> tagMap, int statusCode) {
+						Log.i(TAG, "Get user tags response is: " + (tagMap == null ? null : new JSONObject(tagMap)) + ", statusCode: " + statusCode);
+					}
+
 				});
 			}
 		});

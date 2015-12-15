@@ -64,27 +64,29 @@ public class Constants {
 	public static final String HTTP_PARAM_PUSH_ID = "pushId";
 	public static final String HTTP_PARAM_CUSTOM_ID = "customId";
 	public static final String HTTP_PARAM_BT_STATE = "bluetooth";
+	public static final String HTTP_PARAM_EVENT_DURATION = "eventDuration";
+	public static final String HTTP_PARAM_USER_TAGS = "userTags";
 	public static final String HTTP_PARAM_AVAILABLE_STORAGE = "storage";
-
 	public static final String HTTP_PARAM_INSTALLED_APPS = "installedApps";
 	public static final String HTTP_PARAM_BATTERY_LEVEL = "batteryLevel";
+
 	public static final String CONFIG_PARAM_SESSION_TIMEOUT = "session_timeout";
 	public static final String CONFIG_PARAM_API_KEY = "api_key";
 	public static final String CONFIG_PARAM_GCM_SENDER_ID = "gcm_senderId";
 	public static final String CONFIG_PARAM_PERIODIC_DISPATCH = "periodic_dispatch_enabled";
 	public static final String CONFIG_PARAM_TRACKING_CODE = "tracking_code";
-	public static final String CONFIG_PARAM_SERVER_URL = "server_url";
 
+	public static final String CONFIG_PARAM_SERVER_URL = "server_url";
 	public static final String CONFIG_PARAM_DISPATCH_PERIOD = "dispatch_period";
 	public static final String CONFIG_PARAM_MAX_CACHED_ACTIVITY_COUNT = "max_cached_activity_count";
+
 	public static final String CONFIG_PARAM_LOGGING_ENABLED = "logging_enabled";
 
 	public static final String CONFIG_PARAM_AUTO_PUSH_REGISTRATION = "auto_push_registration";
-
 	public static final int CONFIG_PARAM_DEFAULT_VALUE_SESSION_TIMEOUT_IN_MINUTES = 30;
 	public static final int CONFIG_PARAM_DEFAULT_VALUE_DISPATCH_PERIOD_IN_MINUTES = 5;
-	public static final int CONFIG_PARAM_DEFAULT_VALUE_MAX_CACHED_ACTIVITY_COUNT = 1000;
 
+	public static final int CONFIG_PARAM_DEFAULT_VALUE_MAX_CACHED_ACTIVITY_COUNT = 1000;
 	public static final int CONFIG_PARAM_MAX_VALUE_MAX_CACHED_ACTIVITY_COUNT = 4000;
 	public static final String ERROR = "error";
 	public static final String ERROR_CODE = "errorCode";
@@ -92,51 +94,54 @@ public class Constants {
 	public static final String URL = "url";
 	public static final String PAIRS = "pairs";
 	public static final String CALLBACK = "callback";
+
 	public static final String PRIORITY = "priority";
-
 	public static final String HTTP = "http://";
-	public static final String HTTPS = "https://";
 
+	public static final String HTTPS = "https://";
 	public static final int ERROR_CODE_NO_NETWORK = -100;
 	public static final int ERROR_CODE_AUTO_PUSH_REGISTERATION_NOT_ENABLED = -101;
 	public static final String BACKSLASH = "/";
 	public static final String API = "api";
 	public static final String SERVER_URL_SUFFIX_SESSION_START = "/visit/create";
 	public static final String SERVER_URL_SUFFIX_SESSION_END = "/visit/end";
-	public static final String SERVER_URL_SUFFIX_SCREEN_START = "/hit/create";
 
+	public static final String SERVER_URL_SUFFIX_SCREEN_START = "/hit/create";
 	public static final String SERVER_URL_SUFFIX_SCREEN_END = "/hit/end";
 	public static final String SERVER_URL_SUFFIX_SEND_EVENT = "/event/create";
 	public static final String SERVER_URL_SUFFIX_EVENT_END = "/event/end";
 	public static final String SERVER_URL_SUFFIX_PERIODIC_BATCH = "/batch/create";
 	public static final String SERVER_URL_SUFFIX_OFFLINE_CACHE = "/offline/create";
+
 	public static final String SERVER_URL_SUFFIX_PUSH_DATA = "/visitor/setPushData";
-
 	public static final String SERVER_URL_SUFFIX_UNREGISTER = "/visitor/unregister";
-	public static final String UTF8_ENCODING = "utf-8";
-	public static final int NOT_IN_PROCESS = 0;
+	public static final String SERVER_URL_SUFFIX_SET_USER_TAG = "/visitor/setUserTag";
+	public static final String SERVER_URL_SUFFIX_GET_USER_TAGS = "/visitor/getVisitorProfileTags";
 
+	public static final String UTF8_ENCODING = "utf-8";
+
+	public static final int NOT_IN_PROCESS = 0;
 	public static final String NOT_IN_PROCESS_STR = "0";
 	public static final int IN_PROCESS = 1;
-	public static final String IN_PROCESS_STR = "1";
 
+	public static final String IN_PROCESS_STR = "1";
 	public static final String OS_NAME_STR = "Android";
 	public static final String CONNECTION_TYPE_STR_WIFI = "wifi";
 	public static final String CONNECTION_TYPE_STR_MOBILE = "mobile";
-	public static final String CONNECTION_TYPE_STR_OTHER = "other";
 
+	public static final String CONNECTION_TYPE_STR_OTHER = "other";
 	public static final String THREAD_NAME_CURIO_REQ_PROC = "Curio Request Processor";
 	public static final String THREAD_NAME_DB_REQ_PROC = "DB Request Processor";
 	public static final int REQUEST_QUEUE_CAPACITY = 100;
 	public static final int GINGERBREAD_2_3_3_SDK_INT = 10;
+
 	public static final int HONEYCOMB_SDK_INT = 11;
-
 	public static final int HONEYCOMB_3_2_SDK_INT = 13;
-	public static final int JELLYBEAN_4_2_SDK_INT = 17;
 
+	public static final int JELLYBEAN_4_2_SDK_INT = 17;
 	public static final int JELLY_BEAN_MR2_4_3_SDK_INT = 18;
 	//Important, update this value on every version update!!!
-	public static final String CURIO_SDK_VER = "1.1.3";
+	public static final String CURIO_SDK_VER = "1.1.4";
 	public static final String SHARED_PREF_NAME_GCM = "gcm";
 	public static final String SHARED_PREF_NAME_CURIO = "curio";
 	public static final String SHARED_PREF_KEY_GCM_REGID = "gcm_registration_id";
@@ -147,5 +152,4 @@ public class Constants {
 	public static final String BT_STATUS_ON = "on";
 	public static final String BT_STATUS_OFF = "off";
 	public static final String BT_STATUS_NO_PERMISSON = "no permission";
-	public static final String HTTP_PARAM_EVENT_DURATION = "eventDuration";
 }

@@ -24,8 +24,13 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -105,5 +110,23 @@ public class CurioUtil {
 	public static boolean isFirstTimeUse(Context context) {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREF_NAME_CURIO, Context.MODE_PRIVATE);
 		return sharedPreferences.getBoolean(Constants.SHARED_PREF_KEY_FIRST_TIME_USE, true);
+	}
+
+	public static Map<String, String> getMapFromJson(JSONObject jsonObject) {
+		if(jsonObject == null){
+			return null;
+		}
+
+		Map<String, String> map = new HashMap<String, String>();
+		Iterator<String> iterator = jsonObject.keys();
+		while(iterator.hasNext()){
+			String key = iterator.next();
+			try {
+				map.put(key, (String)jsonObject.get(key));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return map;
 	}
 }

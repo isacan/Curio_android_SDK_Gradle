@@ -41,6 +41,24 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
         android:text="Unregister From Push Server" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send User Tags"
+        android:id="@+id/sendTags"
+        android:layout_below="@+id/unregister"
+        android:layout_marginBottom="15dp"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get User Tags"
+        android:id="@+id/getTags"
+        android:layout_below="@+id/sendTags"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
