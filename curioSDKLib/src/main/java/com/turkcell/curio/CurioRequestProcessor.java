@@ -110,7 +110,7 @@ public class CurioRequestProcessor implements Runnable {
 			break;
 		}
 
-		queue.add(onlineRequest);
+		queue.put(onlineRequest);
 	}
 
 	public void run() {
